@@ -11,6 +11,14 @@
 
 <br/>
 
+<div align="center">
+  <h3>🌍 Live Project Links</h3>
+  <a href="https://sentinel-ai-autonomous-browser-evas.vercel.app"><b>📺 View Frontend Dashboard (Vercel)</b></a> | 
+  <a href="https://sentinel-ai-autonomous-browser-evasion.onrender.com/health"><b>🧠 View AI Backend Health (Render)</b></a>
+</div>
+
+<br/>
+
 An advanced, full-stack autonomous agent designed to identify, intercept, and solve complex captchas (Image Grids, Distorted Text, Sliders, and Contextual Objects) across the web using Google's Gemini Vision AI and mathematical human-interaction simulations.
 
 ---
@@ -86,9 +94,6 @@ To make the agent accessible anywhere in the world, 24/7:
 
 ---
 
-<div align="center">
-  <br/>
-  <h3>Built with passion and precision by</h3>
-  <h2>Utkarsh Srivastav</h2>
-  <p><b>Founder & Lead Architect</b></p>
-</div>
+> **Architected & Engineered by [Utkarsh Srivastav]**  
+> <sub>*Founder & Lead Engineer* | *Autonomous Systems & AI Integration*</sub>  
+> <sup>Bringing Enterprise-Grade Automation to the Modern Web.</sup>
