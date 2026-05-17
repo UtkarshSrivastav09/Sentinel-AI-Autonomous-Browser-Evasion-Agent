@@ -17,6 +17,10 @@ const upload = multer({ storage: multer.memoryStorage() });
 // Initialize Gemini API (replace with actual API key setup via .env)
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'dummy_key' });
 
+app.get('/', (req, res) => {
+  res.send('backend is running');
+});
+
 app.get('/health', (req, res) => {
   res.json({ status: 'healthy', version: '1.0.0' });
 });
@@ -104,5 +108,5 @@ app.post('/api/solve-captcha', upload.single('image'), async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`🤖 Agent Backend running on port ${port}`);
+  console.log(`backend is running`);
 });
