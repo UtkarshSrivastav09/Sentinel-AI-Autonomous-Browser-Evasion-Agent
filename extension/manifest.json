@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Autonomous Captcha Agent By Utkarsh",
+  "version": "2.0.0",
+  "description": "Enterprise-grade AI Captcha Solver",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Open Captcha Agent"
+  }
+}
