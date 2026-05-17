@@ -94,6 +94,6 @@ To make the agent accessible anywhere in the world, 24/7:
 
 ---
 
-> **Architected & Engineered by [Utkarsh Srivastav]**  
+> **Architected & Engineered by Utkarsh Srivastav**  
 > <sub>*Founder & Lead Engineer* | *Autonomous Systems & AI Integration*</sub>  
 > <sup>Bringing Enterprise-Grade Automation to the Modern Web.</sup>
