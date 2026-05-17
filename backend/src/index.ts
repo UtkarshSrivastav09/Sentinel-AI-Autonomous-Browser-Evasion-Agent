@@ -23,11 +23,20 @@ app.get('/health', (req, res) => {
 
 app.post('/api/solve-captcha', upload.single('image'), async (req, res) => {
   try {
-    const { challengeType, instruction } = req.body;
+    const { challengeType, instruction, image } = req.body;
     const file = req.file;
 
-    if (!file) {
-      return res.status(400).json({ error: 'Image file is required' });
+    let base64Image = '';
+    let mimeType = 'image/png';
+
+    if (file) {
+        base64Image = file.buffer.toString("base64");
+        mimeType = file.mimetype;
+    } else if (image) {
+        // If sent as JSON base64 string
+        base64Image = image.replace(/^data:image\/\w+;base64,/, '');
+    } else {
+      return res.status(400).json({ error: 'Image file or base64 string is required' });
     }
 
     if (!process.env.GEMINI_API_KEY) {
@@ -57,8 +66,8 @@ app.post('/api/solve-captcha', upload.single('image'), async (req, res) => {
                 parts: [
                     {
                         inlineData: {
-                            data: file.buffer.toString("base64"),
-                            mimeType: file.mimetype
+                            data: base64Image,
+                            mimeType: mimeType
                         }
                     },
                     {
