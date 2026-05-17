@@ -19,6 +19,13 @@
 
 <br/>
 
+<div align="center">
+  <h3>🎬 Autonomous Agent In Action</h3>
+  <video src="frontend/public/autonomous-browser-captcha-agent%20-%20Antigravity%20-%20index.ts%202026-05-17%2022-35-07.mp4" width="100%" max-width="800" controls autoplay muted loop style="border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.1);"></video>
+</div>
+
+<br/>
+
 An advanced, full-stack autonomous agent designed to identify, intercept, and solve complex captchas (Image Grids, Distorted Text, Sliders, and Contextual Objects) across the web using Google's Gemini Vision AI and mathematical human-interaction simulations.
 
 ---
