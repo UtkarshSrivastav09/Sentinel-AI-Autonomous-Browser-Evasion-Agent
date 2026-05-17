@@ -10,7 +10,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log("Received captcha solve request:", message);
     
     // Simulate sending to backend
-    fetch('http://localhost:4000/api/solve-captcha', {
+    fetch('https://sentinel-ai-autonomous-browser-evasion.onrender.com', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
