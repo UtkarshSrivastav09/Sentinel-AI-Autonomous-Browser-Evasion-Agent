@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { AgentStatus, LogEntry, BoundingBox } from '../types';
 
 interface AgentState {
+  activeTab: 'solver' | 'biometrics' | 'robustness';
+  setActiveTab: (tab: 'solver' | 'biometrics' | 'robustness') => void;
   currentChallengeIdx: number;
   status: AgentStatus;
   logs: LogEntry[];
@@ -32,6 +34,8 @@ interface AgentState {
 }
 
 export const useAgentStore = create<AgentState>((set) => ({
+  activeTab: 'solver',
+  setActiveTab: (activeTab) => set({ activeTab }),
   currentChallengeIdx: 0,
   status: 'idle',
   logs: [],
@@ -84,6 +88,7 @@ export const useAgentStore = create<AgentState>((set) => ({
   }),
 
   reset: () => set({
+    activeTab: 'solver',
     currentChallengeIdx: 0,
     status: 'idle',
     logs: [],

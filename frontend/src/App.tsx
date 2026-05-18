@@ -9,8 +9,10 @@ import { TextCaptcha } from './components/captchas/TextCaptcha';
 import { SliderCaptcha } from './components/captchas/SliderCaptcha';
 import { VisualChallenge } from './components/captchas/VisualChallenge';
 import { ChallengeType } from './types';
-import { Play, RotateCcw, ShieldCheck } from 'lucide-react';
+import { Play, RotateCcw, ShieldCheck, Activity, Sliders } from 'lucide-react';
 import { useAgentStore } from './store/useAgentStore';
+import { BiometricAnalyzer } from './components/BiometricAnalyzer';
+import { RobustnessSandbox } from './components/RobustnessSandbox';
 
 const CHALLENGES: { type: ChallengeType; title: string }[] = [
   { type: 'image-grid', title: 'Image Grid Recognition' },
@@ -88,6 +90,7 @@ function App() {
       store.addLog('Neural Net analyzing image segments...', 'info');
       await new Promise(r => setTimeout(r, 600));
       store.addLog('Identified image grid. Target: "Cars". Confidence: 0.94', 'observation');
+      store.addLog('XAI DIAGNOSIS: Segment indices [0, 2, 4, 7] resolved with high structural similarity. Circular edge curves (wheels) and reflective metallic outlines (chassis) mapped to target category with p-val < 0.001.', 'success');
     } else if (challenge.type === 'text') {
       store.setBoxes([
         { top: 24, left: 8, width: 84, height: 32, label: 'OCR_SOURCE' },
@@ -96,6 +99,7 @@ function App() {
       store.addLog('De-noising source image...', 'info');
       await new Promise(r => setTimeout(r, 600));
       store.addLog('Detected distorted text. Running OCR...', 'observation');
+      store.addLog('XAI DIAGNOSIS: Segmented alphanumeric symbols: [X, 8, R, 2, P]. Neural OCR layers resolved glyph outlines successfully despite 35% spatial shear distortion.', 'success');
     } else if (challenge.type === 'slider') {
       store.setBoxes([
         { top: 21, left: 6, width: 88, height: 48, label: 'SPATIAL_SYNC' },
@@ -104,6 +108,7 @@ function App() {
       store.addLog('Extracting feature maps for puzzle matching...', 'info');
       await new Promise(r => setTimeout(r, 600));
       store.addLog('Identified slider mechanics. Calculating offset...', 'observation');
+      store.addLog('XAI DIAGNOSIS: Pixel-wise correlation matched target shape puzzle slot at x-offset = 180px (Standard deviation overlap = 98.4%).', 'success');
     } else if (challenge.type === 'visual-click') {
       store.setBoxes([
         { top: 22, left: 8, width: 84, height: 62, label: 'CONTEXT_FIELD' },
@@ -112,6 +117,7 @@ function App() {
       store.addLog('Scanning contextual environment...', 'info');
       await new Promise(r => setTimeout(r, 600));
       store.addLog('Detected interactive objects in field.', 'observation');
+      store.addLog('XAI DIAGNOSIS: Object identification maps: peak 1 (x:20, y:40) classification score: 0.941; peak 2 (x:65, y:55) score: 0.923; peak 3 (x:45, y:35) score: 0.957.', 'success');
     }
 
     await new Promise(r => setTimeout(r, 1500));
@@ -178,13 +184,13 @@ function App() {
     store.addLog('System reset. Waiting for instructions.', 'info');
   };
 
-  const menuItems: MenuItem[] = [
-    { label: 'Live Dashboard', active: true },
-    { label: 'Neural Logs', active: false },
-    { label: 'Pattern Library', active: false },
-    { label: 'Simulate Google', active: false, onClick: () => {
-      store.addLog('SIMULATION_SWAP: TARGET_SET = google.com/recaptcha', 'info');
-      store.addLog('Target identified: Google reCAPTCHA v2', 'observation');
+  const menuItems = [
+    { label: 'Live Solver Simulation', active: store.activeTab === 'solver', onClick: () => store.setActiveTab('solver') },
+    { label: 'Biometric Analyzer', active: store.activeTab === 'biometrics', onClick: () => store.setActiveTab('biometrics') },
+    { label: 'AI Robustness Sandbox', active: store.activeTab === 'robustness', onClick: () => store.setActiveTab('robustness') },
+    { label: 'Simulate Threat Audits', active: false, onClick: () => {
+      store.addLog('SYSTEM: Initialized diagnostic threat sweeps across active frameworks.', 'info');
+      store.addLog('AUDIT: No automation vulnerabilities flagged in current container context.', 'success');
     }}
   ];
 
@@ -248,7 +254,9 @@ function App() {
             <div className="flex flex-col">
               <span className="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em] mb-0.5">Active_Phase</span>
               <span className="text-slate-900 font-black text-sm lg:text-lg tracking-tight truncate max-w-[150px] lg:max-w-none">
-                {CHALLENGES[store.currentChallengeIdx]?.title}
+                {store.activeTab === 'solver' ? CHALLENGES[store.currentChallengeIdx]?.title : 
+                 store.activeTab === 'biometrics' ? 'Biometric Kinematics Analyzer' : 
+                 'AI Robustness Sandbox'}
               </span>
             </div>
           </div>
@@ -257,100 +265,140 @@ function App() {
             <div className="hidden sm:flex items-center gap-6 text-[10px] font-bold text-slate-400 border-r border-slate-100 pr-6 mr-2">
                <div className="flex flex-col items-end">
                   <span className="text-slate-300">LATENCY</span>
-                  <span className="text-slate-600 tracking-tighter font-mono">0.004s</span>
+                  <span className="text-slate-600 tracking-tighter font-mono">
+                    {store.activeTab === 'solver' ? '0.004s' : 
+                     store.activeTab === 'biometrics' ? 'REALTIME' : 
+                     'GRADIENT'}
+                  </span>
                </div>
             </div>
 
-            <button 
-              onClick={solveChallenge}
-              disabled={store.status !== 'idle'}
-              className="group relative flex items-center gap-2 lg:gap-3 bg-slate-900 text-white px-5 lg:px-8 py-2.5 lg:py-3 rounded-xl lg:rounded-2xl font-black text-[10px] lg:text-xs tracking-[0.1em] hover:bg-indigo-600 disabled:opacity-40 transition-all shadow-xl shadow-slate-200"
-            >
-              <Play className="w-3 h-3 lg:w-4 lg:h-4 fill-current group-hover:translate-x-0.5 transition-transform" />
-              SOLVE_NOW
-            </button>
+            {store.activeTab === 'solver' ? (
+              <button 
+                onClick={solveChallenge}
+                disabled={store.status !== 'idle'}
+                className="group relative flex items-center gap-2 lg:gap-3 bg-slate-900 text-white px-5 lg:px-8 py-2.5 lg:py-3 rounded-xl lg:rounded-2xl font-black text-[10px] lg:text-xs tracking-[0.1em] hover:bg-indigo-600 disabled:opacity-40 transition-all shadow-xl shadow-slate-200"
+              >
+                <Play className="w-3 h-3 lg:w-4 lg:h-4 fill-current group-hover:translate-x-0.5 transition-transform" />
+                SOLVE_NOW
+              </button>
+            ) : (
+              <div className="px-5 py-2.5 lg:py-3 rounded-xl border border-slate-100 text-[10px] font-black tracking-widest text-indigo-500 font-mono uppercase bg-indigo-50/50">
+                {store.activeTab === 'biometrics' ? 'BIOMETRICS_MODE' : 'AUDITING_MODE'}
+              </div>
+            )}
           </div>
         </header>
 
-        <div className="flex-1 p-4 lg:p-10 flex flex-col overflow-hidden bg-slate-50/50">
-          <BrowserWindow url={`https://secure-gate.auth.internal/challenge/${CHALLENGES[store.currentChallengeIdx]?.type || 'unknown'}`}>
-            <div className="h-full w-full flex items-center justify-center p-4 bg-[#f8fafc] overflow-hidden">
-               <div className="relative shadow-[0_30px_70px_rgba(0,0,0,0.1)] rounded-3xl">
-                  <div className="relative z-10">
-                    {store.currentChallengeIdx === 0 && (
-                      <ImageGrid 
-                        instruction="Cars"
-                        images={IMAGES.cars}
-                        selectedIndices={store.selectedImages}
-                        onToggleImage={(i) => store.setSelectedImages(p => p.includes(i) ? p.filter(x => x !== i) : [...p, i])}
-                      />
-                    )}
+        <div className="flex-1 p-4 lg:p-10 flex flex-col overflow-y-auto lg:overflow-hidden bg-slate-50/50 pb-24 lg:pb-10">
+          {store.activeTab === 'solver' && (
+            <>
+              <BrowserWindow url={`https://secure-gate.auth.internal/challenge/${CHALLENGES[store.currentChallengeIdx]?.type || 'unknown'}`}>
+                <div className="h-full w-full flex items-center justify-center p-4 bg-[#f8fafc] overflow-hidden">
+                   <div className="relative shadow-[0_30px_70px_rgba(0,0,0,0.1)] rounded-3xl">
+                      <div className="relative z-10">
+                        {store.currentChallengeIdx === 0 && (
+                          <ImageGrid 
+                            instruction="Cars"
+                            images={IMAGES.cars}
+                            selectedIndices={store.selectedImages}
+                            onToggleImage={(i) => store.setSelectedImages(p => p.includes(i) ? p.filter(x => x !== i) : [...p, i])}
+                          />
+                        )}
 
-                    {store.currentChallengeIdx === 1 && (
-                      <TextCaptcha 
-                        text="X8R2P"
-                        value={store.captchaText}
-                        onChange={store.setCaptchaText}
-                        onVerify={() => {}}
-                      />
-                    )}
+                        {store.currentChallengeIdx === 1 && (
+                          <TextCaptcha 
+                            text="X8R2P"
+                            value={store.captchaText}
+                            onChange={store.setCaptchaText}
+                            onVerify={() => {}}
+                          />
+                        )}
 
-                    {store.currentChallengeIdx === 2 && (
-                      <SliderCaptcha 
-                        puzzleImage={IMAGES.landscape}
-                        pieceImage={IMAGES.mountain}
-                        targetX={180}
-                        onSuccess={() => {}}
-                        onFailure={() => {}}
-                        isAgentSolving={store.status === 'acting'}
-                        agentProgress={store.sliderPos}
-                      />
-                    )}
+                        {store.currentChallengeIdx === 2 && (
+                          <SliderCaptcha 
+                            puzzleImage={IMAGES.landscape}
+                            pieceImage={IMAGES.mountain}
+                            targetX={180}
+                            onSuccess={() => {}}
+                            onFailure={() => {}}
+                            isAgentSolving={store.status === 'acting'}
+                            agentProgress={store.sliderPos}
+                          />
+                        )}
 
-                    {store.currentChallengeIdx === 3 && (
-                      <VisualChallenge 
-                        instruction="Identify the prominent peaks"
-                        image={IMAGES.landscape}
-                        targets={[
-                          { id: 1, x: 20, y: 40, found: store.foundTargets.includes(1) },
-                          { id: 2, x: 65, y: 55, found: store.foundTargets.includes(2) },
-                          { id: 3, x: 45, y: 35, found: store.foundTargets.includes(3) },
-                        ]}
-                        onTargetClick={(id) => store.setFoundTargets(p => [...p, id])}
+                        {store.currentChallengeIdx === 3 && (
+                          <VisualChallenge 
+                            instruction="Identify the prominent peaks"
+                            image={IMAGES.landscape}
+                            targets={[
+                              { id: 1, x: 20, y: 40, found: store.foundTargets.includes(1) },
+                              { id: 2, x: 65, y: 55, found: store.foundTargets.includes(2) },
+                              { id: 3, x: 45, y: 35, found: store.foundTargets.includes(3) },
+                            ]}
+                            onTargetClick={(id) => store.setFoundTargets(p => [...p, id])}
+                          />
+                        )}
+                      </div>
+
+                      <AgentOverlay 
+                        boxes={store.boxes} 
+                        cursorPosition={store.cursorPos}
+                        isScanning={store.isScanning}
                       />
-                    )}
+                   </div>
+                </div>
+              </BrowserWindow>
+
+              <footer className="mt-8 flex items-center justify-between text-[10px] font-black text-slate-400 bg-white/50 p-6 rounded-3xl border border-slate-100">
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>ENTERPRISE_EDITION</span>
                   </div>
+                  <div className="hidden sm:flex items-center gap-2 text-indigo-500">
+                    <ShieldCheck className="w-3 h-3" />
+                    <span>KERNEL_SYNC_STABLE</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                   <span className="font-mono">ID: {Math.random().toString(36).slice(2, 10).toUpperCase()}</span>
+                   <div className="h-4 w-px bg-slate-100" />
+                   <span className="text-slate-900 font-bold">AUTO_SOLVE::READY</span>
+                </div>
+              </footer>
+            </>
+          )}
 
-                  <AgentOverlay 
-                    boxes={store.boxes} 
-                    cursorPosition={store.cursorPos}
-                    isScanning={store.isScanning}
-                  />
-               </div>
-            </div>
-          </BrowserWindow>
-
-          <footer className="mt-8 flex items-center justify-between text-[10px] font-black text-slate-400 bg-white/50 p-6 rounded-3xl border border-slate-100">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span>ENTERPRISE_EDITION</span>
-              </div>
-              <div className="hidden sm:flex items-center gap-2 text-indigo-500">
-                <ShieldCheck className="w-3 h-3" />
-                <span>KERNEL_SYNC_STABLE</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-               <span className="font-mono">ID: {Math.random().toString(36).slice(2, 10).toUpperCase()}</span>
-               <div className="h-4 w-px bg-slate-100" />
-               <span className="text-slate-900 font-bold">AUTO_SOLVE::READY</span>
-            </div>
-          </footer>
+          {store.activeTab === 'biometrics' && <BiometricAnalyzer />}
+          {store.activeTab === 'robustness' && <RobustnessSandbox />}
         </div>
       </main>
 
-      <AgentTerminal logs={store.logs} status={store.status} />
+      {/* Floating Bottom Nav for Mobile / Tablet */}
+      <nav className="lg:hidden fixed bottom-4 left-4 right-4 bg-white/95 backdrop-blur-xl border border-slate-100 p-2.5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.08)] z-50 flex justify-around items-center">
+        {menuItems.slice(0, 3).map((item, i) => {
+          const Icon = i === 0 ? ShieldCheck : i === 1 ? Activity : Sliders;
+          return (
+            <button
+              key={i}
+              onClick={item.onClick}
+              className={cn(
+                "flex flex-col items-center gap-1 p-1 rounded-xl transition-all duration-300",
+                item.active ? "text-indigo-600 scale-105" : "text-slate-400 hover:text-slate-600"
+              )}
+            >
+              <Icon className="w-4 h-4" />
+              <span className="text-[8px] font-black uppercase tracking-wider">{item.label.split(' ')[0]}</span>
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* Responsive Hidden wrapper for AgentTerminal to prevent layout breakage on small mobile viewports */}
+      <div className="hidden xl:flex shrink-0">
+        <AgentTerminal logs={store.logs} status={store.status} />
+      </div>
     </div>
   );
 }
